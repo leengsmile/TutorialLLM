@@ -1,0 +1,100 @@
+import argparse
+
+import torch
+
+from dataset import Dataset
+from evaluator import Evaluator
+from model import TutorialLLM
+from trainer import Trainer
+
+
+def parse_args() -> argparse.Namespace:
+    """
+    Parse the arguments for the training process.
+
+    Returns:
+        args: The parsed arguments.
+    """
+    parser = argparse.ArgumentParser(description='Train the model for poem generation')
+    parser.add_argument('--batch_size', type=int, default=16, help='The batch size for training')
+    parser.add_argument('--max_length', type=int, default=256, help='The maximum length of a text to be processed')
+    parser.add_argument('--dim_embedding', type=int, default=64, help='The dimension of the embedding vector in the transformer')
+    parser.add_argument('--num_head', type=int, default=4, help='The number of heads in the multi-head attention')
+    parser.add_argument('--num_layer', type=int, default=4, help='The number of layers in the transformer')
+    parser.add_argument('--iterations_for_pretrain', type=int, default=20000, help='The number of iterations for pretrain')
+    parser.add_argument('--epochs_for_finetune', type=int, default=5, help='The number of epochs for finetune')
+    parser.add_argument('--epochs_for_alignment', type=int, default=3, help='The number of epochs for alignment')
+    args, _  = parser.parse_known_args()
+    return args
+
+args = parse_args()
+print(f'args: {args}')
+
+print(f'{"-"*50}\nSTAGE 1: PREPARE THE DATA')
+# The number of parallel items to process, known as the batch size
+batch_size = 16
+# The maximum length of a text to be processed
+max_length = 256
+# Run the model on GPU(cuda) if available
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+print(f'device: {device}')
+
+# Set a seed for reproducibility
+torch.manual_seed(2024)
+dataset = Dataset('data.json', batch_size, max_length, device)
+print('Check a batch of pretrain data:')
+print(dataset.get_batch_pretrain('train'))
+print('Check a batch of finetune data:')
+print(next(dataset.get_batch_generator_finetune('train')))
+print('Check a batch of alignment data:')
+print(next(dataset.get_batch_generator_alignment('train')))
+
+print(f'{"-"*50}\nSTAGE 2: TRAINING CONFIGURATION')
+# The dimension of the embedding vector in the transformer
+dim_embedding = 64
+# The number of heads in the multi-head attention
+num_head = 4
+# The number of layers in the transformer
+num_layer = 4
+# Create a TutorialLLM instance
+model = TutorialLLM(dataset.vocabulary_size, dim_embedding, max_length, num_head, num_layer, device)
+# Switch the model to training mode and move the data to the specified device
+model.train()
+model.to(device)
+# Show the model size
+print(f'Our model has {sum(parameter.numel() for parameter in model.parameters())/1e6} M parameters')
+# The number of iterations to evaluate the pretrain process (each iteration processes a batch)
+iterations_to_evaluate_pretrain = 100
+# The interval of iterations to evaluate the pretrain process
+interval_to_evaluate_pretrain = 100
+# The interval of iterations to evaluate the finetune process
+interval_to_evaluate_finetune = 50
+# The interval of iterations to evaluate the alignment process
+interval_to_evaluate_alignment = 50
+# Create an Evaluator instance to evaluate the performance during training
+evaluator = Evaluator(dataset, device, iterations_to_evaluate_pretrain, interval_to_evaluate_pretrain, interval_to_evaluate_finetune, interval_to_evaluate_alignment)
+# Create a Trainer instance for susequent training
+trainer = Trainer(model, dataset, evaluator, device)
+
+print(f'{"-"*50}\nSTAGE 3: PRETRAIN')
+print("In this stage, the model will learn the basic knowledge of how to write poems.\n")
+# The number of iterations for pretrain (each iteration processes a batch)
+iterations_for_pretrain = 20000
+# Pretrain the model
+trainer.pretrain(iterations_for_pretrain)
+
+print(f'{"-"*50}\nSTAGE 4: FINETUNE')
+print("In this stage, the model will learn to generate poems based on the instruction.")
+print("In our case, we ask the model to generate a poem with a given title.\n")
+# The number of epochs to finetune the model
+epochs_for_finetune = 5
+# Finetune the model
+trainer.finetune(epochs_for_finetune)
+
+print(f'{"-"*50}\nSTAGE 5: ALIGN PREFERENCE')
+print("In this stage, the model will learn to generate poems that we prefer.")
+print("In our case, we prefer five-words poems than other poems.\n")
+# The number of epochs to align the model with our preference
+epochs_for_alignment = 3
+# Align the model with our preference
+trainer.align(epochs_for_alignment)
