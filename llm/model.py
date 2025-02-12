@@ -27,8 +27,8 @@ class CasualSelfAttention(nn.Module):
         self.n_head = n_head
         self.dropout = dropout
         
-        # self.c_attn = nn.Linear(n_embd, n_embd*3, bias=bias)
-        self.c_attn = nn.ModuleList([nn.Linear(n_embd, n_embd, bias=bias) for _ in range(3)])
+        self.c_attn = nn.Linear(n_embd, n_embd*3, bias=bias)
+        # self.c_attn = nn.ModuleList([nn.Linear(n_embd, n_embd, bias=bias) for _ in range(3)])
         self.c_proj = nn.Linear(n_embd, n_embd, bias=bias)
         
         self.attn_dropout = nn.Dropout(dropout)
@@ -42,9 +42,9 @@ class CasualSelfAttention(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         B, T, C = x.size()
         
-        # q, k, v = self.c_attn(x).split(self.n_embd, dim=2)
+        q, k, v = self.c_attn(x).split(self.n_embd, dim=2)
         # print(f'shape(x): {x.size()}, n_embd: {self.n_embd}, weight size: {self.c_attn[0].weight.size()}')
-        q, k, v = [l(x) for l in self.c_attn]
+        # q, k, v = [l(x) for l in self.c_attn]
         q = q.view(B, T, self.n_head, self.n_embd//self.n_head).transpose(1, 2)  # (B, nh, T, hs)
         k = k.view(B, T, self.n_head, self.n_embd//self.n_head).transpose(1, 2)  # (B, nh, T, hs)
         v = v.view(B, T, self.n_head, self.n_embd//self.n_head).transpose(1, 2)  # (B, nh, T, hs)
