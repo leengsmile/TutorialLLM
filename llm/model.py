@@ -2,7 +2,20 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
+"""
+hot fix disap
+"""
+class LayerNorm(nn.Module):
+    
+    def __init__(self, n_embd: int, bias: bool = False, eps: float = 1e-5) -> None:
+        super().__init__()
+        self.weight = nn.Parameter(torch.ones(n_embd))
+        self.bias = nn.Parameter(torch.zeros(n_embd)) if bias else None
+        self.eps = eps
+    
+    def forward(self, input: torch.Tensor) -> torch.Tensor:
+        return F.layer_norm(input, self.weight.shape, self.weight, self.bias, self.eps)
+    
 class CasualSelfAttention(nn.Module):
     
     def  __init__(self, n_embd: int, n_head: int, block_size: int, dropout: float = 0., bias: bool = False) -> None:
@@ -63,9 +76,9 @@ class MLP(nn.Module):
 class Block(nn.Module):
     
     def __init__(self, n_embd: int, n_head: int, dropout: float = 0., bias: bool = False) -> None:
-        self.ln_1 = nn.LayerNorm(n_embd, bias=bias)
+        self.ln_1 = LayerNorm(n_embd, bias=bias)
         self.attn = CasualSelfAttention(n_embd, n_head, dropout, bias)
-        self.ln_2 = nn.LayerNorm(n_embd, bias=bias)
+        self.ln_2 = LayerNorm(n_embd, bias=bias)
         self.mlp = MLP(n_embd, dropout, bias)
     
     def __forward__(self, x: torch.Tensor) -> torch.Tensor:
@@ -84,7 +97,7 @@ class GPT(nn.Module):
             wpe = nn.Embedding(block_size, n_embd),
             drop = nn.Dropout(dropout),
             blocks = nn.ModuleList([Block(n_embd, n_head, dropout, bias) for _ in range(n_layer)]),
-            ln = nn.LayerNorm(n_embd, bias=bias)
+            ln = LayerNorm(n_embd, bias=bias)
         ))
         self.lm_head = nn.Linear(n_embd, vocab_size, bias=False)
         self.transformer.wte.weight = self.transformer.wpe.weight
