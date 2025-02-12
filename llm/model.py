@@ -41,6 +41,7 @@ class CasualSelfAttention(nn.Module):
         B, T, C = x.size()
         
         # q, k, v = self.c_attn(x).split(self.n_embd, dim=2)
+        print(f'shape(x): {x.size()}, n_embd: {self.n_embd}, weight size: {self.c_attn[0].weight.size()}')
         q, k, v = [l(x) for l in self.c_attn]
         q = q.view(B, T, self.n_head, self.n_embd//self.n_head).transpose(1, 2)  # (B, nh, T, hs)
         k = k.view(B, T, self.n_head, self.n_embd//self.n_head).transpose(1, 2)  # (B, nh, T, hs)
