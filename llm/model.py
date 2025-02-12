@@ -22,13 +22,13 @@ class CasualSelfAttention(nn.Module):
     
     def  __init__(self, n_embd: int, n_head: int, block_size: int, dropout: float = 0., bias: bool = False) -> None:
         super().__init__()
+        assert n_embd % n_head == 0, 'n_embd must be divisible by n_head'
         self.n_embd = n_embd
         self.n_head = n_head
         self.dropout = dropout
         
         # self.c_attn = nn.Linear(n_embd, n_embd*3, bias=bias)
         self.c_attn = nn.ModuleList([nn.Linear(n_embd, n_embd, bias=bias) for _ in range(3)])
-        self.dropout = nn.Dropout(dropout)
         self.c_proj = nn.Linear(n_embd, n_embd, bias=bias)
         
         self.attn_dropout = nn.Dropout(dropout)
