@@ -102,7 +102,7 @@ class GPT(nn.Module):
         super().__init__()
         self.transformer = nn.ModuleDict(dict(
             wte = nn.Embedding(vocab_size, n_embd),
-            wpe = nn.Embedding(block_size, n_embd),
+            wpe = nn.Embedding(vocab_size, n_embd),
             drop = nn.Dropout(dropout),
             blocks = nn.ModuleList([Block(n_embd, n_head, dropout, bias) for _ in range(n_layer)]),
             ln = LayerNorm(n_embd, bias=bias)
