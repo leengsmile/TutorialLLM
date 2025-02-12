@@ -8,6 +8,8 @@ from model import TutorialLLM
 from trainer import Trainer
 
 
+from llm.model import GPT
+
 def parse_args() -> argparse.Namespace:
     """
     Parse the arguments for the training process.
@@ -58,6 +60,8 @@ num_head = 4
 num_layer = 4
 # Create a TutorialLLM instance
 model = TutorialLLM(dataset.vocabulary_size, dim_embedding, max_length, num_head, num_layer, device)
+model = GPT(vocab_size=dataset.vocabulary_size, n_embd=dim_embedding, block_size=max_length, n_head=num_head, n_layer=num_layer)
+# model.to(device)
 # Switch the model to training mode and move the data to the specified device
 model.train()
 model.to(device)
