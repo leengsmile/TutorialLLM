@@ -19,7 +19,7 @@ class LayerNorm(nn.Module):
 class CasualSelfAttention(nn.Module):
     
     def  __init__(self, n_embd: int, n_head: int, block_size: int, dropout: float = 0., bias: bool = False) -> None:
-        suiper().__init__()
+        super().__init__()
         self.n_embd = n_embd
         self.n_head = n_head
         self.dropout = dropout
@@ -62,7 +62,7 @@ class CasualSelfAttention(nn.Module):
 class MLP(nn.Module):
     
     def __init__(self, n_embd: int, dropout: float = 0., bias: bool = False) -> None:
-        suiper().__init__()
+        super().__init__()
         self.c_fc = nn.Linear(n_embd, n_embd*4, bias=bias)
         self.act = nn.GELU()
         self.c_proj = nn.Linear(n_embd*4, n_embd, bias=bias)
