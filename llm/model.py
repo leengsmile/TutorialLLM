@@ -65,7 +65,12 @@ class CasualSelfAttention(nn.Module):
         
 
 class MLP(nn.Module):
-    
+    """Multi-layer perceptron with GELU activation.
+
+    Args:
+        n_embd (int): The number of input and output units.
+        dropout (float): The dropout rate.
+    """
     def __init__(self, n_embd: int, dropout: float = 0., bias: bool = False) -> None:
         super().__init__()
         self.c_fc = nn.Linear(n_embd, n_embd*4, bias=bias)
