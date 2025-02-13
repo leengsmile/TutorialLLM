@@ -154,7 +154,7 @@ class GPT(nn.Module):
             # loss = F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1), 
             #                        ignore_index=-1, 
             #                        reduction='mean' if reduce_loss else 'sum')
-            print(f'loss: {loss.item()}')
+            print(f'loss: {loss.item()}, {loss.device = }')
             
         else:
             logits = self.lm_head(x[:, [-1], :])
