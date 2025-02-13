@@ -147,9 +147,9 @@ class GPT(nn.Module):
         if targets is not None:
             logits = self.lm_head(x)
             
-            B, T, V = logits.size()
-            logits = logits.view(-1, V)
-            targets = targets.view(-1)
+            # B, T, V = logits.size()
+            # logits = logits.view(-1, V)
+            # targets = targets.view(-1)
             # loss = F.cross_entropy(logits, targets, reduce=reduce_loss)
             loss = F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1), 
                                    ignore_index=-1, 
