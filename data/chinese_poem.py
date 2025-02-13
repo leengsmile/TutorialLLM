@@ -85,7 +85,7 @@ def process(input_path: str, output_path: str) -> None:
     if not os.path.exists(output_path):
         os.mkdir(output_path)
     
-    with open(output_path, 'wb') as f:
+    with open(os.path.join(output_path, 'data.pkl'), 'wb') as f:
         data = {
             'pretrain': pretrain_dataset,
             'finetune': finetune_dataset,
