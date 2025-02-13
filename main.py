@@ -83,7 +83,7 @@ trainer = Trainer(model, dataset, evaluator, device)
 print(f'{"-"*50}\nSTAGE 3: PRETRAIN')
 print("In this stage, the model will learn the basic knowledge of how to write poems.\n")
 # The number of iterations for pretrain (each iteration processes a batch)
-iterations_for_pretrain = 20000
+iterations_for_pretrain = 200
 # Pretrain the model
 trainer.pretrain(iterations_for_pretrain)
 
