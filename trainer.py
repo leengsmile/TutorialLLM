@@ -75,11 +75,11 @@ class Trainer():
             # Reset the evaluator to clear the loss history for each epoch
             self.evaluator.reset()
             for i, (inputs, labels) in enumerate(self.dataset.get_batch_generator_finetune('train')):
-                print(f'## {inputs.size()}, {labels.size()}, {inputs = }, {labels = }')
+                # print(f'## {inputs.size()}, {labels.size()}, {inputs = }, {labels = }')
                 # Forward pass and calculate the loss
                 _, loss = self.model(inputs, labels)
 
-                print(type(loss), loss.size())
+                # print(type(loss), loss.size())
                 # Evaluate the model performance
                 self.evaluator.evaluate_finetune(self.model, epoch, i, loss.item())
 
