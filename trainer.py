@@ -46,6 +46,7 @@ class Trainer():
             inputs, labels = self.dataset.get_batch_pretrain('train')
             # Forward pass and calculate the loss
             _, loss = self.model(inputs, labels)
+            print(f'pretrain: {loss = } {inputs.size()}, {labels.size()}, {inputs = }, {labels = }')
 
             # Evaluate the model performance
             self.evaluator.evaluate_pretrain(self.model, i, loss.item())
