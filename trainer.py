@@ -77,7 +77,7 @@ class Trainer():
                 # Forward pass and calculate the loss
                 _, loss = self.model(inputs, labels)
 
-                print(loss)
+                print(type(loss), loss.size())
                 # Evaluate the model performance
                 self.evaluator.evaluate_finetune(self.model, epoch, i, loss.item())
 
