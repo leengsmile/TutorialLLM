@@ -150,10 +150,10 @@ class GPT(nn.Module):
             B, T, V = logits.size()
             logits = logits.view(-1, V)
             targets = targets.view(-1)
-            loss = F.cross_entropy(logits, targets, reduce=reduce_loss, ignore_index=-1)
-            # loss = F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1), 
-            #                        ignore_index=-1, 
-            #                        reduction='mean' if reduce_loss else 'sum')
+            # loss = F.cross_entropy(logits, targets, reduce=reduce_loss)
+            loss = F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1), 
+                                   ignore_index=-1, 
+                                   reduction='mean' if reduce_loss else 'sum')
             print(f'loss: {loss.item()}, {loss.device = }')
             
         else:

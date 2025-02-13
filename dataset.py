@@ -252,5 +252,5 @@ class Dataset():
             # Check if there are more than one zeros in the label
             if indices.numel() > 1:
                 # Exclude the first zero because it marks the end of the text
-                labels[i, indices[1:]] = 0
+                labels[i, indices[1:]] = -100
         return inputs, labels
