@@ -78,8 +78,6 @@ def process(input_path: str, output_path: str) -> None:
     
     pretrain_dataset = tokenizer.encode(pretrain_text)
     finetune_dataset = [[tokenizer.encode(text)] for text in finetune_texts]
-    
-    finetune_dataset = [torch.tensor(tokenizer.encode(text), dtype=torch.long) for text in finetune_texts]
     alignment_dataset = [(tokenizer.encode(positive_text), 
                           tokenizer.encode(negative_text))
                          for positive_text, negative_text in alignment_texts]
