@@ -1,5 +1,4 @@
 import json
-import logging
 import os
 import pickle
 import random
@@ -31,7 +30,7 @@ def process(input_path: str, output_path: str) -> None:
         pretrain_texts.append(f'{title}\n{body}')
     
     pretrain_text = '\n\n'.join(pretrain_texts)
-    logging.info(f'pretrain text: {pretrain_text[:100]}')
+    print(f'pretrain text: {pretrain_text[:100]}')
     
     finetune_texts = []
     instruction = '請用以下題目寫一首詩'
@@ -44,7 +43,7 @@ def process(input_path: str, output_path: str) -> None:
         title = item['title']
         content = f'{instruction_label}{instruction}{input_label}{title}{response_label}{body}'
         finetune_texts.append(content)
-    logging.info(f'The instruction finetune data is a list of formatted texts. Here is the first item: {finetune_texts[0]}')
+    print(f'The instruction finetune data is a list of formatted texts. Here is the first item: {finetune_texts[0]}')
     
     five_word_texts = []
     other_texts = []
@@ -66,7 +65,7 @@ def process(input_path: str, output_path: str) -> None:
         positive_text = f'{instruction_label}{instruction}{input_label}{positive_title}{response_label}{positive_body}'
         negative_text = f'{instruction_label}{instruction}{input_label}{negative_title}{response_label}{negative_body}'
         alignment_texts.append((positive_text, negative_text))
-    logging.info(f'The alignment data is a list of positive-negative pairs. Here is the first pair: {alignment_texts[0]}')
+    print(f'The alignment data is a list of positive-negative pairs. Here is the first pair: {alignment_texts[0]}')
     
     corpus = [pretrain_text]
     corpus.extend(finetune_texts)
@@ -83,6 +82,7 @@ def process(input_path: str, output_path: str) -> None:
                          for positive_text, negative_text in alignment_texts]
 
     if not os.path.exists(output_path):
+        print(f'Cleared the existing output folder: {output_path}')
         os.mkdir(output_path)
     
     with open(os.path.join(output_path, 'data.pkl'), 'wb') as f:
