@@ -92,6 +92,9 @@ def process(input_path: str, output_path: str) -> None:
             'alignment': alignment_dataset,
         }
         pickle.dump(data, f)
+        
+    with open(os.path.join(output_path, 'tokenizer.pkl'), 'wb') as f:
+        pickle.dump(tokenizer, f)
 
 
 if __name__ == '__main__':
